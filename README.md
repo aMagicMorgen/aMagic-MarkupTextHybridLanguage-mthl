@@ -1,4 +1,4 @@
-# mthl
+# .mdh -> .mthl
 Спецификация формата MTHL (Markup Text Hybrid Language)
 
 - ЭТО ИДЕЯ ДЛЯ БУДУЮЩЕЙ РАЗРАБТКИ!
