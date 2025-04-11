@@ -2,11 +2,12 @@
 Спецификация формата MTHL (Markup Text Hybrid Language)
 
 - ЭТО ИДЕЯ ДЛЯ БУДУЮЩЕЙ РАЗРАБТКИ!
-- *.mthl это гибридный файл для написания на разном синтаксисе
-    - html, Markdown, Markdown Extra, Markdown Style(это мой новый синтаксис на основе CSS селекторов), PHP
+- `*.mthl` это гибридный файл для написания на разном синтаксисе
+    - `html`, `Markdown`, `Markdown Extra`, `Markdown Style` (это мой новый синтаксис на основе CSS селекторов), `PHP`
     - PUG и другие синтаксисы которые можно регистрировать и вводить для письма
 - Markdown Hybrid (это мой новый подход писать без переключения на отдельные синтаксисы)
-    - *.mdh (Markdown Hibrid) это расширение файла для синтаксиса html, Markdown, Markdown Extra, Markdown Style, PHP - родитель для *.mthl
+    - `*.mdh (Markdown Hibrid)` это расширение файла для синтаксиса `html`, `Markdown`, `Markdown Extra`, `Markdown Style`, `PHP` - родитель для `*.mthl`
+- Запуск будет производиться через `*.php` файл через `class MHTH`
 
 ### **Спецификация формата MTHL (Markup Text Hybrid Language)**  
 **Версия:** 1.0 (Draft)  
