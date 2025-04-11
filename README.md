@@ -6,6 +6,7 @@
     - html, Markdown, Markdown Extra, Markdown Style(это мой новый синтаксис на основе CSS селекторов), PHP
     - PUG и другие синтаксисы которые можно регистрировать и вводить для письма
 - Markdown Hybrid (это мой новый подход писать без переключения на отдельные синтаксисы)
+    - *.mdh это расширение файла для html, Markdown, Markdown Extra, Markdown Style, PHP - родитель для *.mthl
 
 ### **Спецификация формата MTHL (Markup Text Hybrid Language)**  
 **Версия:** 1.0 (Draft)  
