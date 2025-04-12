@@ -2,7 +2,7 @@
 
 ### Код парсера (PHP):
 ```php
-class IndentParser {
+class MDS {
     // Теги без закрывающего элемента (void elements)
     const VOID_TAGS = [
         'area', 'base', 'br', 'col', 'embed', 'hr', 'img',
@@ -113,7 +113,7 @@ ul.menu#main
   input[type='text' placeholder='Введите имя']
 ";
 
-$parser = new IndentParser();
+$parser = new MDS();
 echo $parser->parse($input);
 ```
 
