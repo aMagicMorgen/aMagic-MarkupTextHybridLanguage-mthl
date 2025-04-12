@@ -149,7 +149,7 @@ div.widget
 ---
 
 ## **8. Реализации**
-- **Эталонный парсер:** [GitHub/mthl-parser](https://github.com/mthl-parser) (PHP)  
+- **Эталонный парсер:** [GitHub/mthl-parser](class-MDS-MarkdownStyle.md) (PHP)  
 - **Плагины:** Поддержка Vue/React через npm-пакеты.  
 
 ---
