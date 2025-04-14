@@ -1,5 +1,29 @@
+<style>
+	section {
+		width: 100%;
+		background: #ffeded;
+		padding: 1em;
+		border-radius: 0.75rem;
+		#line-height: 1.6;
+		overflow: hidden;
+		margin-bottom: 2rem;
+		position: relative;
+		#font-size: .875rem;
+		box-shadow: 0 10px 15px -3px rgb(0 0 0 / 10%), 0 4px 6px -2px rgb(0 0 0 / 5%);
+	}
+</style>
+
+<form id="login" action="/auth">
+  <input type="text" name="login">
+  <input type="password" name="pass">
+  <button class="btn" type="submit">Войти</button>
+</form>
+
+
 # .mdh -> .mthl
 Спецификация формата MTHL (Markup Text Hybrid Language)
+
+<section>
 
 - ЭТО ИДЕЯ ДЛЯ БУДУЮЩЕЙ РАЗРАБТКИ!
 - `*.mthl` это гибридный файл для написания на разном синтаксисе
@@ -8,6 +32,8 @@
 - Markdown Hybrid (это мой новый подход писать без переключения на отдельные синтаксисы)
     - `*.mdh (Markdown Hibrid)` это расширение файла для синтаксиса `html`, `Markdown`, `Markdown Extra`, `Markdown Style`, `PHP` - родитель для `*.mthl`
 - Запуск будет производиться через `*.php` файл через `class MHTH`
+
+</section>
 
 ### **Спецификация формата MTHL (Markup Text Hybrid Language)**  
 **Версия:** 1.0 (Draft)  
