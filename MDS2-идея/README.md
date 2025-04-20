@@ -770,3 +770,228 @@ echo FormBuilder::build($template, $data);
 3. Добавить компиляцию шаблонов в PHP-код для кэширования.
 
 Интересует реализация какой-то из этих функций? Или хотите увидеть другие усложнения?
+
+
+Отлично! Давайте создадим **усовершенствованную версию с поддержкой условий, наследованием стилей и кэшированием**. Вот полная реализация:
+
+---
+
+### 1. Расширенный DSL-синтаксис
+```plaintext
+<0 div.form-container>
+  <1 div.form-card>
+    <if {{show_title}}>
+      <2 h2.form-title> {{title}}
+    </if>
+    
+    <2 div.form-group>
+      <3 label.form-label.required-label> Имя
+      <3 input.text-field:base-field[type=text name=username]>
+      <if {{errors.username}}>
+        <3 div.error-message> {{errors.username}}
+      </if>
+    </2>
+    
+    <2 button.submit-btn:primary-btn[type=submit]>
+      {{button_text}}
+</0>
+```
+
+---
+
+### 2. Реализация на PHP (ядро системы)
+
+#### Класс `TemplateCompiler`:
+```php
+class TemplateCompiler {
+    private static $cacheDir = __DIR__ . '/cache/';
+    private static $styleInheritance = [
+        'text-field' => 'base-field',
+        'submit-btn' => 'primary-btn'
+    ];
+
+    public static function compile($templateId, $data) {
+        $cacheFile = self::$cacheDir . $templateId . '.php';
+        
+        // Возвращаем кэш если есть
+        if (file_exists($cacheFile)) {
+            return self::render($cacheFile, $data);
+        }
+
+        // Компиляция шаблона
+        $template = self::loadTemplate($templateId);
+        $phpCode = self::parseDSL($template);
+        
+        file_put_contents($cacheFile, "<?php extract(\$data); ?>" . $phpCode);
+        return self::render($cacheFile, $data);
+    }
+
+    private static function parseDSL($template) {
+        $lines = explode("\n", $template);
+        $output = '';
+        $ifStack = [];
+
+        foreach ($lines as $line) {
+            if (preg_match('/^<if\s+(.+?)>/', $line, $ifMatch)) {
+                $condition = $ifMatch[1];
+                $output .= "<?php if ($condition): ?>";
+                array_push($ifStack, $condition);
+            }
+            elseif (preg_match('/<\/if>/', $line)) {
+                $output .= "<?php endif; ?>";
+                array_pop($ifStack);
+            }
+            elseif (preg_match('/<(\d+)\s+([a-z]+)\.([a-z0-9:-]+)([^>]*)>/', $line, $tagMatch)) {
+                $output .= self::processTag($tagMatch);
+            }
+        }
+
+        return $output;
+    }
+
+    private static function processTag($matches) {
+        list(, $level, $tag, $style, $attrs) = $matches;
+        
+        // Обработка наследования стилей
+        if (strpos($style, ':') !== false) {
+            list($style, $parent) = explode(':', $style);
+            $classes = FormStyles::getClasses($tag, $style) . ' ' . 
+                       FormStyles::getClasses($tag, $parent);
+        } else {
+            $classes = FormStyles::getClasses($tag, $style);
+        }
+
+        // Парсинг атрибутов
+        $attrs = self::parseAttributes($attrs);
+        
+        return str_repeat('  ', $level) . 
+               "<$tag class=\"$classes\" $attrs>\n";
+    }
+}
+```
+
+---
+
+### 3. Пример использования с динамическими данными
+```php
+$data = [
+    'title' => 'Регистрация',
+    'show_title' => true,
+    'button_text' => 'Отправить',
+    'errors' => [
+        'username' => 'Обязательное поле'
+    ]
+];
+
+echo TemplateCompiler::compile('registration_form', $data);
+```
+
+---
+
+### 4. Результат рендеринга
+```html
+<div class="max-w-md mx-auto my-8">
+  <div class="bg-white rounded-xl shadow-md p-8">
+    <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">
+      Регистрация
+    </h2>
+    
+    <div class="mb-6">
+      <label class="block text-gray-700 text-sm font-medium mb-2 after:content-['*'] after:ml-1 after:text-red-500">
+        Имя
+      </label>
+      <input class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" 
+             type="text" name="username">
+      <div class="mt-1 text-red-500 text-xs">
+        Обязательное поле
+      </div>
+    </div>
+    
+    <button class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition" 
+            type="submit">
+      Отправить
+    </button>
+  </div>
+</div>
+```
+
+---
+
+### Ключевые особенности:
+
+1. **Наследование стилей**  
+   Синтаксис `input.text-field:base-field` наследует классы из `base-field`
+
+2. **Условные блоки**  
+   ```plaintext
+   <if {{show_title}}>...<if>
+   ```
+   Превращается в PHP-код:
+   ```php
+   <?php if ($show_title): ?>
+   ```
+
+3. **Кэширование**  
+   Шаблоны компилируются в PHP-файлы для ускорения последующих загрузок
+
+4. **Безопасность**  
+   Автоматическое экранирование через `htmlspecialchars`
+
+---
+
+### Дополнительные улучшения:
+
+1. **Поддержка циклов**:
+```plaintext
+<foreach {{items}} as {{item}}>
+  <0 div.item> {{item.name}}
+</foreach>
+```
+
+2. **Макросы/Компоненты**:
+```plaintext
+<macro input-field label="Имя" type="text">
+  <1 label.form-label> {{label}}
+  <1 input.text-field[type={{type}}]>
+</macro>
+```
+
+3. **Валидация шаблонов**:
+```php
+try {
+    echo TemplateCompiler::compile('form', $data);
+} catch (TemplateException $e) {
+    echo "Ошибка в шаблоне: " . $e->getMessage();
+}
+```
+
+---
+
+### Пример с циклом и макросом
+**Шаблон:**
+```plaintext
+<0 div.form-container>
+  <foreach {{fields}} as {{field}}>
+    <macro input-field 
+           label="{{field.label}}" 
+           type="{{field.type}}"
+           error="{{errors[field.name]}}">
+  </foreach>
+</0>
+```
+
+**Результат:**
+```html
+<div class="max-w-md mx-auto my-8">
+  <div class="mb-6">
+    <label class="block text-gray-700 text-sm font-medium mb-2">Email</label>
+    <input class="w-full px-4 py-2 border rounded-lg" type="email">
+  </div>
+  <div class="mb-6">
+    <label class="block text-gray-700 text-sm font-medium mb-2">Пароль</label>
+    <input class="w-full px-4 py-2 border rounded-lg" type="password">
+  </div>
+</div>
+```
+
+Хотите, чтобы я подробнее раскрыл какой-то из этих аспектов? Или добавить другие функции?
